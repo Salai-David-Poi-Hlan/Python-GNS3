@@ -1,0 +1,4 @@
+no ip access-list standard test2
+int f0/0
+no ip access-group test2 in
+end

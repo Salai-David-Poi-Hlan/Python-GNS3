@@ -1,0 +1,80 @@
+R1$
+conf t
+	ip default-gateway 192.168.198.1
+	int f0/0
+		ip address 192.168.198.131 255.255.255.0
+		no shut
+		exit
+	int f1/1
+		ip address 192.168.10.1 255.255.255.0
+		no shut
+		exit
+	ip route 192.168.20.0 255.255.255.0 192.168.198.141
+	hostname myRouter1
+	ip domain-name hello.com
+	crypto key generate rsa
+		1024
+	
+	line vty 0 4
+		transport input ssh
+		login local
+		exit
+	line con 0
+		logging synchronous
+		login local
+		username hello password hello
+	enable secret hello
+	service password-encryption
+	do sh ip ssh
+
+
+R2###
+conf t
+	ip default-gateway 192.168.198.1
+	int f0/0
+		ip address 192.168.198.141 255.255.255.0
+		no shut
+		exit
+	int f1/1
+		ip address 192.168.20.1 255.255.255.0
+		no shut
+		exit
+	ip route 192.168.10.0 255.255.255.0 192.168.198.131
+	hostname myRouter2
+	ip domain-name hello.com
+	crypto key generate rsa
+		1024
+	
+	line vty 0 4
+		transport input ssh
+		login local
+		exit
+	line con 0
+		logging synchronous
+		login local
+		username hello password hello
+	enable secret hello
+	service password-encryption
+	do sh ip ssh
+
+
+Pc1##
+ip 192.168.10.100/24 192.168.10.1
+
+Pc2##
+ip 192.168.10.101/24 192.168.10.1
+
+Pc3##
+ip 192.168.20.100/24 192.168.20.1
+
+Pc4##
+ip 192.168.20.101/24 192.168.20.1
+
+
+ip access-list standard test2  
+deny 192.168.10.101 255.255.255.0
+permit any
+int f0/0
+ip access-group test2 in
+end
+

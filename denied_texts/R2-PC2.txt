@@ -1,0 +1,6 @@
+ip access-list standard test2
+deny 192.168.10.101 255.255.255.0
+permit any
+int f0/0
+ip access-group test2 in
+end
